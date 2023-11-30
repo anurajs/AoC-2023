@@ -6,7 +6,7 @@ use reqwest::Method;
 
 pub fn download_day(year: u16, day: u8) -> String {
     dotenv::dotenv().unwrap();
-    let cookie = env::var("COOKIE").expect("Expected cookie");
+    let cookie = env::var("AOC_COOKI").expect("Expected cookie");
     let url = format!("https://adventofcode.com/{year}/day/{day}/input");
     let client = Client::new();
     let response = client
