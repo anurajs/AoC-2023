@@ -73,10 +73,7 @@ mod tests {
     #[test]
     fn part_1() {
         let content = download_day(2023, 1);
-        let mut total = 0;
-        for line in content.lines() {
-            total += calculate_line_one(line);
-        }
+        let total: usize = content.lines().map(calculate_line_one).sum();
         println!("Part 1: {total}");
     }
 
@@ -104,11 +101,11 @@ mod tests {
         ]);
 
         let content = download_day(2023, 1);
-        let mut total = 0;
+        let total: usize = content
+            .lines()
+            .map(|line| calculate_line_two(line, &digits))
+            .sum();
 
-        for line in content.lines() {
-            total += calculate_line_two(line, &digits);
-        }
         println!("Part two: {total}");
     }
 
