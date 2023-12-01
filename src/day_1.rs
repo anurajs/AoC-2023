@@ -33,28 +33,20 @@ pub fn calculate_line_two(line: &str, digits: &HashMap<&str, usize>) -> usize {
     let mut first = None;
     let mut second = None;
     for (digit, val) in digits {
-        let idx = line.find(digit);
-        match idx {
-            Some(i) => {
-                if (i as i32) < min {
-                    first = Some(*val);
-                    min = i as i32;
-                }
+        if let Some(idx) = line.find(digit) {
+            if (idx as i32) < min {
+                first = Some(*val);
+                min = idx as i32;
             }
-            _ => {
-                continue;
-            }
+        } else {
+            continue;
         }
 
-        let idx = line.rfind(digit);
-        match idx {
-            Some(i) => {
-                if (i as i32) > max {
-                    second = Some(*val);
-                    max = i as i32;
-                }
+        if let Some(idx) = line.rfind(digit) {
+            if (idx as i32) > max {
+                second = Some(*val);
+                max = idx as i32;
             }
-            _ => {}
         }
     }
     let combined = format!(
