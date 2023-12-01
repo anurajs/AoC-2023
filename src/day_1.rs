@@ -84,12 +84,8 @@ mod tests {
     use fancy_regex::Regex;
     use once_cell::sync::Lazy;
 
-    use crate::{
-        day_1::{calculate_line_one, calculate_line_two_regex},
-        download_day,
-    };
-
-    use super::calculate_line_two;
+    use super::{calculate_line_one, calculate_line_two, calculate_line_two_regex};
+    use crate::download_day;
 
     static DIGITS: Lazy<HashMap<&str, usize>> = Lazy::new(|| {
         HashMap::from([
