@@ -1,3 +1,4 @@
+use fancy_regex::Regex;
 use std::collections::HashMap;
 
 pub fn calculate_line_one(line: &str) -> usize {
@@ -60,11 +61,32 @@ pub fn calculate_line_two(line: &str, digits: &HashMap<&str, usize>) -> usize {
         .expect("expected both digits to be numbers")
 }
 
+pub fn calculate_line_two_regex(line: &str, regex: &Regex, digits: &HashMap<&str, usize>) -> usize {
+    let matches: Vec<_> = regex.captures_iter(line).collect();
+    let first = &matches[0].as_ref().unwrap()[1];
+    let second = &matches[matches.len() - 1].as_ref().unwrap()[1];
+
+    let combined = format!(
+        "{}{}",
+        digits.get(first).expect("digit should be in map"),
+        digits.get(second).expect("digit should be in map")
+    );
+
+    return combined
+        .parse()
+        .expect("expected both digits to be numbers");
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
-    use crate::{day_1::calculate_line_one, download_day};
+    use fancy_regex::Regex;
+
+    use crate::{
+        day_1::{calculate_line_one, calculate_line_two_regex},
+        download_day,
+    };
 
     use super::calculate_line_two;
 
@@ -102,6 +124,39 @@ mod tests {
         let total: usize = content
             .lines()
             .map(|line| calculate_line_two(line, &digits))
+            .sum();
+
+        println!("Part two: {total}");
+    }
+
+    #[test]
+    fn part_2_regex() {
+        let digits: HashMap<&str, usize> = HashMap::from([
+            ("one", 1),
+            ("two", 2),
+            ("three", 3),
+            ("four", 4),
+            ("five", 5),
+            ("six", 6),
+            ("seven", 7),
+            ("eight", 8),
+            ("nine", 9),
+            ("1", 1),
+            ("2", 2),
+            ("3", 3),
+            ("4", 4),
+            ("5", 5),
+            ("6", 6),
+            ("7", 7),
+            ("8", 8),
+            ("9", 9),
+        ]);
+        let regex =
+            Regex::new(r"(?m)(?=([1-9]|one|two|three|four|five|six|seven|eight|nine))").unwrap();
+        let content = download_day(2023, 1);
+        let total: usize = content
+            .lines()
+            .map(|line| calculate_line_two_regex(line, &regex, &digits))
             .sum();
 
         println!("Part two: {total}");
