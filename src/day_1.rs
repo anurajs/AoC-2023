@@ -1,5 +1,29 @@
 use fancy_regex::Regex;
+use once_cell::sync::Lazy;
 use std::collections::HashMap;
+
+static DIGITS: Lazy<HashMap<&str, usize>> = Lazy::new(|| {
+    HashMap::from([
+        ("one", 1),
+        ("two", 2),
+        ("three", 3),
+        ("four", 4),
+        ("five", 5),
+        ("six", 6),
+        ("seven", 7),
+        ("eight", 8),
+        ("nine", 9),
+        ("1", 1),
+        ("2", 2),
+        ("3", 3),
+        ("4", 4),
+        ("5", 5),
+        ("6", 6),
+        ("7", 7),
+        ("8", 8),
+        ("9", 9),
+    ])
+});
 
 pub fn calculate_line_one(line: &str) -> usize {
     let mut first = None;
@@ -84,7 +108,7 @@ mod tests {
     use fancy_regex::Regex;
 
     use crate::{
-        day_1::{calculate_line_one, calculate_line_two_regex},
+        day_1::{calculate_line_one, calculate_line_two_regex, DIGITS},
         download_day,
     };
 
@@ -99,31 +123,10 @@ mod tests {
 
     #[test]
     fn part_2() {
-        let digits: HashMap<&str, usize> = HashMap::from([
-            ("one", 1),
-            ("two", 2),
-            ("three", 3),
-            ("four", 4),
-            ("five", 5),
-            ("six", 6),
-            ("seven", 7),
-            ("eight", 8),
-            ("nine", 9),
-            ("1", 1),
-            ("2", 2),
-            ("3", 3),
-            ("4", 4),
-            ("5", 5),
-            ("6", 6),
-            ("7", 7),
-            ("8", 8),
-            ("9", 9),
-        ]);
-
         let content = download_day(2023, 1);
         let total: usize = content
             .lines()
-            .map(|line| calculate_line_two(line, &digits))
+            .map(|line| calculate_line_two(line, &DIGITS))
             .sum();
 
         println!("Part two: {total}");
@@ -131,32 +134,12 @@ mod tests {
 
     #[test]
     fn part_2_regex() {
-        let digits: HashMap<&str, usize> = HashMap::from([
-            ("one", 1),
-            ("two", 2),
-            ("three", 3),
-            ("four", 4),
-            ("five", 5),
-            ("six", 6),
-            ("seven", 7),
-            ("eight", 8),
-            ("nine", 9),
-            ("1", 1),
-            ("2", 2),
-            ("3", 3),
-            ("4", 4),
-            ("5", 5),
-            ("6", 6),
-            ("7", 7),
-            ("8", 8),
-            ("9", 9),
-        ]);
         let regex =
             Regex::new(r"(?m)(?=([1-9]|one|two|three|four|five|six|seven|eight|nine))").unwrap();
         let content = download_day(2023, 1);
         let total: usize = content
             .lines()
-            .map(|line| calculate_line_two_regex(line, &regex, &digits))
+            .map(|line| calculate_line_two_regex(line, &regex, &DIGITS))
             .sum();
 
         println!("Part two: {total}");
