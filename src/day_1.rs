@@ -41,7 +41,9 @@ pub fn calculate_line_two(line: &str, digits: &HashMap<&str, usize>) -> usize {
                     min = i as i32;
                 }
             }
-            _ => {}
+            _ => {
+                continue;
+            }
         }
 
         let idx = line.rfind(digit);
