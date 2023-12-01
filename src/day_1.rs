@@ -143,47 +143,26 @@ mod tests {
 
     #[test]
     fn calculate_line_two_test() {
-        let digits: HashMap<&str, usize> = HashMap::from([
-            ("one", 1),
-            ("two", 2),
-            ("three", 3),
-            ("four", 4),
-            ("five", 5),
-            ("six", 6),
-            ("seven", 7),
-            ("eight", 8),
-            ("nine", 9),
-            ("1", 1),
-            ("2", 2),
-            ("3", 3),
-            ("4", 4),
-            ("5", 5),
-            ("6", 6),
-            ("7", 7),
-            ("8", 8),
-            ("9", 9),
-        ]);
-
         let line = "two1nine";
-        assert_eq!(calculate_line_two(line, &digits), 29);
+        assert_eq!(calculate_line_two(line, &DIGITS), 29);
 
         let line = "eightwothree";
-        assert_eq!(calculate_line_two(line, &digits), 83);
+        assert_eq!(calculate_line_two(line, &DIGITS), 83);
 
         let line = "abcone2threexyz";
-        assert_eq!(calculate_line_two(line, &digits), 13);
+        assert_eq!(calculate_line_two(line, &DIGITS), 13);
 
         let line = "xtwone3four";
-        assert_eq!(calculate_line_two(line, &digits), 24);
+        assert_eq!(calculate_line_two(line, &DIGITS), 24);
 
         let line = "4nineeightseven2";
-        assert_eq!(calculate_line_two(line, &digits), 42);
+        assert_eq!(calculate_line_two(line, &DIGITS), 42);
 
         let line = "zoneight234";
-        assert_eq!(calculate_line_two(line, &digits), 14);
+        assert_eq!(calculate_line_two(line, &DIGITS), 14);
 
         let line = "7pqrstsixteen";
-        assert_eq!(calculate_line_two(line, &digits), 76);
+        assert_eq!(calculate_line_two(line, &DIGITS), 76);
     }
 
     #[test]
