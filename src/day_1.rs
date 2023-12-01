@@ -1,29 +1,5 @@
 use fancy_regex::Regex;
-use once_cell::sync::Lazy;
 use std::collections::HashMap;
-
-static DIGITS: Lazy<HashMap<&str, usize>> = Lazy::new(|| {
-    HashMap::from([
-        ("one", 1),
-        ("two", 2),
-        ("three", 3),
-        ("four", 4),
-        ("five", 5),
-        ("six", 6),
-        ("seven", 7),
-        ("eight", 8),
-        ("nine", 9),
-        ("1", 1),
-        ("2", 2),
-        ("3", 3),
-        ("4", 4),
-        ("5", 5),
-        ("6", 6),
-        ("7", 7),
-        ("8", 8),
-        ("9", 9),
-    ])
-});
 
 pub fn calculate_line_one(line: &str) -> usize {
     let mut first = None;
@@ -106,13 +82,37 @@ mod tests {
     use std::collections::HashMap;
 
     use fancy_regex::Regex;
+    use once_cell::sync::Lazy;
 
     use crate::{
-        day_1::{calculate_line_one, calculate_line_two_regex, DIGITS},
+        day_1::{calculate_line_one, calculate_line_two_regex},
         download_day,
     };
 
     use super::calculate_line_two;
+
+    static DIGITS: Lazy<HashMap<&str, usize>> = Lazy::new(|| {
+        HashMap::from([
+            ("one", 1),
+            ("two", 2),
+            ("three", 3),
+            ("four", 4),
+            ("five", 5),
+            ("six", 6),
+            ("seven", 7),
+            ("eight", 8),
+            ("nine", 9),
+            ("1", 1),
+            ("2", 2),
+            ("3", 3),
+            ("4", 4),
+            ("5", 5),
+            ("6", 6),
+            ("7", 7),
+            ("8", 8),
+            ("9", 9),
+        ])
+    });
 
     #[test]
     fn part_1() {
