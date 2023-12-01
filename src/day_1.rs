@@ -30,14 +30,14 @@ pub fn calculate_line_one(line: &str) -> usize {
 pub fn calculate_line_two(line: &str, digits: &HashMap<&str, usize>) -> usize {
     let mut min = i32::MAX;
     let mut max = i32::MIN;
-    let mut first = 0;
-    let mut second = 0;
+    let mut first = None;
+    let mut second = None;
     for (digit, val) in digits {
         let idx = line.find(digit);
         match idx {
             Some(i) => {
                 if (i as i32) < min {
-                    first = *val;
+                    first = Some(*val);
                     min = i as i32;
                 }
             }
@@ -50,14 +50,18 @@ pub fn calculate_line_two(line: &str, digits: &HashMap<&str, usize>) -> usize {
         match idx {
             Some(i) => {
                 if (i as i32) > max {
-                    second = *val;
+                    second = Some(*val);
                     max = i as i32;
                 }
             }
             _ => {}
         }
     }
-    let combined = format!("{}{}", first, second);
+    let combined = format!(
+        "{}{}",
+        first.expect("expected a first digit"),
+        second.expect("expected a second digit")
+    );
 
     combined
         .parse()
