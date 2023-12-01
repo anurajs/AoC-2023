@@ -1,4 +1,6 @@
-pub fn calculate_line(line: &str) -> usize {
+use std::collections::HashMap;
+
+pub fn calculate_line_one(line: &str) -> usize {
     let mut first = None;
     let mut second = None;
     for c in line.chars() {
@@ -25,32 +27,148 @@ pub fn calculate_line(line: &str) -> usize {
         .expect("expected both digits to be numbers")
 }
 
+pub fn calculate_line_two(line: &str, digits: &HashMap<&str, usize>) -> usize {
+    let mut min = i32::MAX;
+    let mut max = i32::MIN;
+    let mut first = 0;
+    let mut second = 0;
+    for (digit, val) in digits {
+        let idx = line.find(digit);
+        match idx {
+            Some(i) => {
+                if (i as i32) < min {
+                    first = *val;
+                    min = i as i32;
+                }
+            }
+            _ => {}
+        }
+
+        let idx = line.rfind(digit);
+        match idx {
+            Some(i) => {
+                if (i as i32) > max {
+                    second = *val;
+                    max = i as i32;
+                }
+            }
+            _ => {}
+        }
+    }
+    let combined = format!("{}{}", first, second);
+
+    combined
+        .parse()
+        .expect("expected both digits to be numbers")
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::{day_1::calculate_line, download_day};
+    use std::collections::HashMap;
+
+    use crate::{day_1::calculate_line_one, download_day};
+
+    use super::calculate_line_two;
 
     #[test]
     fn part_1() {
         let content = download_day(2023, 1);
         let mut total = 0;
         for line in content.lines() {
-            total += calculate_line(line);
+            total += calculate_line_one(line);
         }
         println!("Part 1: {total}");
     }
 
     #[test]
-    fn calculate_line_test() {
+    fn part_2() {
+        let digits: HashMap<&str, usize> = HashMap::from([
+            ("one", 1),
+            ("two", 2),
+            ("three", 3),
+            ("four", 4),
+            ("five", 5),
+            ("six", 6),
+            ("seven", 7),
+            ("eight", 8),
+            ("nine", 9),
+            ("1", 1),
+            ("2", 2),
+            ("3", 3),
+            ("4", 4),
+            ("5", 5),
+            ("6", 6),
+            ("7", 7),
+            ("8", 8),
+            ("9", 9),
+        ]);
+
+        let content = download_day(2023, 1);
+        let mut total = 0;
+
+        for line in content.lines() {
+            total += calculate_line_two(line, &digits);
+        }
+        println!("Part two: {total}");
+    }
+
+    #[test]
+    fn calculate_line_two_test() {
+        let digits: HashMap<&str, usize> = HashMap::from([
+            ("one", 1),
+            ("two", 2),
+            ("three", 3),
+            ("four", 4),
+            ("five", 5),
+            ("six", 6),
+            ("seven", 7),
+            ("eight", 8),
+            ("nine", 9),
+            ("1", 1),
+            ("2", 2),
+            ("3", 3),
+            ("4", 4),
+            ("5", 5),
+            ("6", 6),
+            ("7", 7),
+            ("8", 8),
+            ("9", 9),
+        ]);
+
+        let line = "two1nine";
+        assert_eq!(calculate_line_two(line, &digits), 29);
+
+        let line = "eightwothree";
+        assert_eq!(calculate_line_two(line, &digits), 83);
+
+        let line = "abcone2threexyz";
+        assert_eq!(calculate_line_two(line, &digits), 13);
+
+        let line = "xtwone3four";
+        assert_eq!(calculate_line_two(line, &digits), 24);
+
+        let line = "4nineeightseven2";
+        assert_eq!(calculate_line_two(line, &digits), 42);
+
+        let line = "zoneight234";
+        assert_eq!(calculate_line_two(line, &digits), 14);
+
+        let line = "7pqrstsixteen";
+        assert_eq!(calculate_line_two(line, &digits), 76);
+    }
+
+    #[test]
+    fn calculate_line_one_test() {
         let mut line = "1abc2";
-        assert_eq!(calculate_line(line), 12);
+        assert_eq!(calculate_line_one(line), 12);
 
         line = "pqr3stu8vwx";
-        assert_eq!(calculate_line(line), 38);
+        assert_eq!(calculate_line_one(line), 38);
 
         line = "a1b2c3d4e5f";
-        assert_eq!(calculate_line(line), 15);
+        assert_eq!(calculate_line_one(line), 15);
 
         line = "treb7uchet";
-        assert_eq!(calculate_line(line), 77);
+        assert_eq!(calculate_line_one(line), 77);
     }
 }
