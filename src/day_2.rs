@@ -29,10 +29,10 @@ pub fn cube_counter_regex(line: &str) -> CubeGame {
     }
 
     CubeGame {
-        red: red,
-        green: green,
-        blue: blue,
-        id: id,
+        red,
+        green,
+        blue,
+        id,
     }
 }
 
@@ -65,10 +65,10 @@ pub fn cube_counter(line: &str) -> CubeGame {
         }
     }
     CubeGame {
-        red: red,
-        green: green,
-        blue: blue,
-        id: id,
+        red,
+        green,
+        blue,
+        id,
     }
 }
 
