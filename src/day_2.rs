@@ -1,9 +1,39 @@
+use fancy_regex::Regex;
+
 #[derive(PartialEq, Eq, Debug)]
 pub struct CubeGame {
     red: usize,
     green: usize,
     blue: usize,
     id: usize,
+}
+
+pub fn cube_counter_regex(line: &str) -> CubeGame {
+    let re = Regex::new(r"Game (\d+):").unwrap();
+    let id: usize = re.captures(line).unwrap().expect("Expected Id")[1]
+        .parse()
+        .expect("Expected number");
+
+    let (mut red, mut green, mut blue) = (0, 0, 0);
+    let re = Regex::new(r"(\d+) (red|green|blue)").unwrap();
+    for m in re.captures_iter(line) {
+        let m = m.unwrap();
+        let amount: usize = m[1].parse().expect("Expected amount");
+        let color = &m[2];
+        match color {
+            "red" => red = red.max(amount),
+            "green" => green = green.max(amount),
+            "blue" => blue = blue.max(amount),
+            _ => {}
+        }
+    }
+
+    CubeGame {
+        red: red,
+        green: green,
+        blue: blue,
+        id: id,
+    }
 }
 
 pub fn cube_counter(line: &str) -> CubeGame {
@@ -44,7 +74,10 @@ pub fn cube_counter(line: &str) -> CubeGame {
 
 #[cfg(test)]
 mod tests {
-    use crate::{day_2::cube_counter, download_day};
+    use crate::{
+        day_2::{cube_counter, cube_counter_regex},
+        download_day,
+    };
 
     use super::CubeGame;
 
@@ -73,6 +106,30 @@ mod tests {
     }
 
     #[test]
+    fn part_1_regex() {
+        let content = download_day(2023, 2);
+        let result: usize = content
+            .lines()
+            .map(cube_counter_regex)
+            .filter(|game| game.red <= 12 && game.green <= 13 && game.blue <= 14)
+            .map(|game| game.id)
+            .sum();
+        println!("Part 1: {result}")
+    }
+
+    #[test]
+    fn part_2_regex() {
+        let content = download_day(2023, 2);
+        let result: usize = content
+            .lines()
+            .map(cube_counter_regex)
+            .map(|game| game.red * game.blue * game.green)
+            .sum();
+
+        println!("Part 2: {result}")
+    }
+
+    #[test]
     fn cube_counter_test() {
         let line = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green";
         let expected = CubeGame {
@@ -82,6 +139,7 @@ mod tests {
             green: 2,
         };
         assert_eq!(cube_counter(line), expected);
+        assert_eq!(cube_counter_regex(line), expected);
     }
 
     #[test]
