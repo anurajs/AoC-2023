@@ -2,10 +2,10 @@ use fancy_regex::Regex;
 
 #[derive(PartialEq, Eq, Debug)]
 pub struct CubeGame {
+    id: usize,
     red: usize,
     green: usize,
     blue: usize,
-    id: usize,
 }
 
 pub fn cube_counter_regex(line: &str) -> CubeGame {
