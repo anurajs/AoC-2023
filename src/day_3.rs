@@ -19,7 +19,7 @@ pub fn get_gears(content: &str) -> Vec<(usize, usize)> {
     for (i, line) in grid.iter().enumerate() {
         let mut c_iter = line.iter().enumerate();
         let mut buffer: String = String::from("");
-        let mut is_part = None;
+        let mut gear = None;
         while let Some((j, c)) = c_iter.next() {
             if c.is_numeric() {
                 buffer.push(c.clone());
@@ -31,24 +31,24 @@ pub fn get_gears(content: &str) -> Vec<(usize, usize)> {
                     {
                         let comp = grid[(x + i as i32) as usize][(y + j as i32) as usize];
                         if comp == '*' {
-                            is_part = Some(((x + i as i32) as usize, (y + j as i32) as usize));
+                            gear = Some(((x + i as i32) as usize, (y + j as i32) as usize));
                         }
                     }
                 }
             } else {
-                if is_part.is_some() && buffer != "" {
-                    let point = is_part.unwrap();
+                if gear.is_some() && buffer != "" {
+                    let point = gear.unwrap();
                     gear_map
                         .entry(point)
                         .or_insert(Vec::new())
                         .push(buffer.parse().unwrap());
                 }
                 buffer.clear();
-                is_part = None;
+                gear = None;
             }
         }
-        if is_part.is_some() && buffer != "" {
-            let point = is_part.unwrap();
+        if gear.is_some() && buffer != "" {
+            let point = gear.unwrap();
             gear_map
                 .entry(point)
                 .or_insert(Vec::new())
