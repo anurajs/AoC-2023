@@ -77,7 +77,16 @@ mod tests {
     fn score_test() {
         let card = "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53";
         let res = calculate_matching(card);
-        assert_eq!(res, 8);
+        assert_eq!(
+            {
+                if res == 0 {
+                    0
+                } else {
+                    2_u32.pow(res - 1)
+                }
+            },
+            8
+        );
     }
 
     #[test]
