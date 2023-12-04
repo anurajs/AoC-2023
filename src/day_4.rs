@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-pub fn calculate_matching(card: &str) -> u32 {
+pub fn calculate_matching(card: &str) -> usize {
     let sides: Vec<&str> = card.split("|").collect();
     let winning_side = sides[0];
     let winning_side = winning_side.split(":").collect::<Vec<&str>>()[1];
@@ -24,8 +24,8 @@ pub fn calculate_matching(card: &str) -> u32 {
     matching
 }
 
-pub fn calculate_copies(cards: &str) -> u32 {
-    let score: Vec<u32> = cards.lines().map(calculate_matching).collect();
+pub fn calculate_copies(cards: &str) -> usize {
+    let score: Vec<usize> = cards.lines().map(calculate_matching).collect();
     let mut copies = vec![1; score.len()];
     for i in 0..copies.len() {
         let amount = copies[i];
@@ -49,13 +49,7 @@ mod tests {
         let res: u32 = content
             .lines()
             .map(calculate_matching)
-            .map(|amount| {
-                if amount == 0 {
-                    0
-                } else {
-                    2_u32.pow(amount - 1)
-                }
-            })
+            .map(|amount| if amount == 0 { 0 } else { 1 << (amount - 1) })
             .sum();
         println!("Part 1: {res}");
     }
@@ -76,7 +70,7 @@ mod tests {
                 if res == 0 {
                     0
                 } else {
-                    2_u32.pow(res - 1)
+                    1 << (res - 1)
                 }
             },
             8
@@ -107,13 +101,7 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
         let res: u32 = content
             .lines()
             .map(calculate_matching)
-            .map(|amount| {
-                if amount == 0 {
-                    0
-                } else {
-                    2_u32.pow(amount - 1)
-                }
-            })
+            .map(|amount| if amount == 0 { 0 } else { 1 << (amount - 1) })
             .sum();
         assert_eq!(res, 13);
     }
