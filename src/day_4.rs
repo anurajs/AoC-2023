@@ -9,18 +9,12 @@ pub fn calculate_matching(card: &str) -> u32 {
 
     let mut winning: HashSet<usize> = HashSet::new();
     while let Some(num) = winning_iter.next() {
-        if num.trim().is_empty() {
-            continue;
-        }
         winning.insert(num.parse().expect("expected number"));
     }
 
     let mut matching = 0;
     let mut picked_iter = picked_side.split_whitespace();
     while let Some(num) = picked_iter.next() {
-        if num.trim().is_empty() {
-            continue;
-        }
         let num = num.parse().expect("expected number");
         if winning.contains(&num) {
             matching += 1;
