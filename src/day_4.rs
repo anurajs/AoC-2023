@@ -29,7 +29,7 @@ pub fn calculate_copies(cards: &str) -> usize {
     let mut copies = vec![1; score.len()];
     for i in 0..copies.len() {
         let amount = copies[i];
-        for j in i + 1..=i + score[i] as usize {
+        for j in i + 1..=i + score[i] {
             copies[j] += amount
         }
     }
