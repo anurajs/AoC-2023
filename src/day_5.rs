@@ -61,7 +61,7 @@ pub fn ranges_in_map(
                 range: location_range.range + location_range.location - map.source - map.range,
             });
         }
-    } else {
+    } else if location_range.location >= map.source + map.range {
         not_covered.insert(location_range.clone());
     }
 
@@ -101,11 +101,16 @@ pub fn calculate_location_ranges(
     loop {
         let num_uncovered = not_covered.len();
         let mut temp_not_covered = HashSet::new();
-        for uncovered in not_covered.drain() {
+        'unc: for uncovered in not_covered.drain() {
             for map in map_collection.iter() {
                 let (mut c, mut u) = ranges_in_map(&uncovered, map);
+                let c_len = c.len();
                 covered.extend(c.drain());
                 temp_not_covered.extend(u.drain());
+                if c_len > 0 {
+                    temp_not_covered.remove(&uncovered);
+                    continue 'unc;
+                }
             }
         }
         not_covered = temp_not_covered.difference(&covered).cloned().collect();
@@ -214,7 +219,6 @@ mod tests {
                 maps.push(line);
             } else {
                 initial = calculate_location_ranges(initial, &maps);
-                println!("{initial:?}");
                 line_iter.next();
                 maps.clear();
             }
