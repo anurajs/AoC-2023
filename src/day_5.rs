@@ -7,7 +7,7 @@ pub struct Map {
     range: usize,
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 pub struct LocationRange {
     location: usize,
     range: usize,
@@ -22,7 +22,7 @@ pub fn is_in_range(map: &Map, initial: usize) -> Option<usize> {
 }
 
 pub fn ranges_in_map(
-    location_range: &LocationRange,
+    location_range: LocationRange,
     map: &Map,
 ) -> (HashSet<LocationRange>, HashSet<LocationRange>) {
     let mut covered = HashSet::new();
@@ -62,13 +62,13 @@ pub fn ranges_in_map(
             });
         }
     } else if location_range.location >= map.source + map.range {
-        not_covered.insert(location_range.clone());
+        not_covered.insert(location_range);
     }
 
     (covered, not_covered)
 }
 
-fn is_range_covered(range: &LocationRange, map: &Map) -> Option<LocationRange> {
+fn is_range_covered(range: LocationRange, map: &Map) -> Option<LocationRange> {
     if range.location >= map.source && range.location + range.range <= map.source + map.range {
         return Some(LocationRange {
             location: map.destination + (range.location - map.source),
@@ -81,7 +81,7 @@ fn is_range_covered(range: &LocationRange, map: &Map) -> Option<LocationRange> {
 
 pub fn calculate_location_ranges(
     initial: HashSet<LocationRange>,
-    maps: &Vec<&str>,
+    maps: &[&str],
 ) -> HashSet<LocationRange> {
     let mut map_collection: Vec<Map> = Vec::new();
     for line in maps {
@@ -103,7 +103,7 @@ pub fn calculate_location_ranges(
         let mut temp_not_covered = HashSet::new();
         'unc: for uncovered in not_covered.drain() {
             for map in map_collection.iter() {
-                let (mut c, mut u) = ranges_in_map(&uncovered, map);
+                let (mut c, mut u) = ranges_in_map(uncovered, map);
                 let c_len = c.len();
                 covered.extend(c.drain());
                 temp_not_covered.extend(u.drain());
@@ -113,14 +113,14 @@ pub fn calculate_location_ranges(
                 }
             }
         }
-        not_covered = temp_not_covered.difference(&covered).cloned().collect();
+        not_covered = temp_not_covered.difference(&covered).copied().collect();
         if not_covered.len() == num_uncovered {
             break;
         }
     }
 
-    let mut covered_to_min: HashMap<&LocationRange, LocationRange> = HashMap::new();
-    for c in covered.iter() {
+    let mut covered_to_min: HashMap<LocationRange, LocationRange> = HashMap::new();
+    for c in covered {
         for map in map_collection.iter() {
             match is_range_covered(c, map) {
                 Some(location) => {
@@ -145,7 +145,7 @@ pub fn calculate_location_ranges(
     not_covered
 }
 
-pub fn calculate_location(initial: HashSet<usize>, maps: &Vec<&str>) -> HashSet<usize> {
+pub fn calculate_location(initial: HashSet<usize>, maps: &[&str]) -> HashSet<usize> {
     let mut map_collection: Vec<Map> = Vec::new();
     for line in maps {
         let mut parts = line.split_whitespace();
@@ -266,7 +266,7 @@ mod tests {
     #[test]
     fn calculate_location_test() {
         let initial: HashSet<usize> = HashSet::from([79, 14, 55, 13]);
-        let maps = "50 98 2
+        let maps: Vec<&str> = "50 98 2
 52 50 48"
             .lines()
             .collect();
