@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Map {
     source: usize,
     destination: usize,
@@ -13,7 +13,7 @@ pub struct LocationRange {
     range: usize,
 }
 
-pub fn is_in_range(map: &Map, initial: usize) -> Option<usize> {
+pub fn is_in_range(map: Map, initial: usize) -> Option<usize> {
     if initial >= map.source && initial < map.source + map.range {
         let location = map.destination + (initial - map.source);
         return Some(location);
@@ -23,7 +23,7 @@ pub fn is_in_range(map: &Map, initial: usize) -> Option<usize> {
 
 pub fn ranges_in_map(
     location_range: LocationRange,
-    map: &Map,
+    map: Map,
 ) -> (HashSet<LocationRange>, HashSet<LocationRange>) {
     let mut covered = HashSet::new();
     let mut not_covered = HashSet::new();
@@ -68,7 +68,7 @@ pub fn ranges_in_map(
     (covered, not_covered)
 }
 
-fn is_range_covered(range: LocationRange, map: &Map) -> Option<LocationRange> {
+fn is_range_covered(range: LocationRange, map: Map) -> Option<LocationRange> {
     if range.location >= map.source && range.location + range.range <= map.source + map.range {
         return Some(LocationRange {
             location: map.destination + (range.location - map.source),
@@ -102,7 +102,7 @@ pub fn calculate_location_ranges(
         let num_uncovered = not_covered.len();
         let mut temp_not_covered = HashSet::new();
         'unc: for uncovered in not_covered.drain() {
-            for map in map_collection.iter() {
+            for map in map_collection.iter().copied() {
                 let (mut c, mut u) = ranges_in_map(uncovered, map);
                 let c_len = c.len();
                 covered.extend(c.drain());
@@ -121,7 +121,7 @@ pub fn calculate_location_ranges(
 
     let mut covered_to_min: HashMap<LocationRange, LocationRange> = HashMap::new();
     for c in covered {
-        for map in map_collection.iter() {
+        for map in map_collection.iter().copied() {
             match is_range_covered(c, map) {
                 Some(location) => {
                     covered_to_min
@@ -161,8 +161,8 @@ pub fn calculate_location(initial: HashSet<usize>, maps: &[&str]) -> HashSet<usi
 
     let mut source_to_min: HashMap<usize, usize> = HashMap::new();
     for source in initial.iter() {
-        for map in map_collection.iter() {
-            match is_in_range(&map, *source) {
+        for map in map_collection.iter().copied() {
+            match is_in_range(map, *source) {
                 Some(mut location) => {
                     source_to_min
                         .entry(*source)
