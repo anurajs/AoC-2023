@@ -4,6 +4,7 @@ pub mod day_3;
 pub mod day_4;
 pub mod day_5;
 
+use std::time::SystemTime;
 use std::{env, fs};
 
 use dotenv;
@@ -31,7 +32,14 @@ pub fn download_day(year: u16, day: u8) -> String {
 
     response
 }
-
+pub fn timeit<F: Fn() -> T, T>(f: F) -> T {
+    let start = SystemTime::now();
+    let result = f();
+    let end = SystemTime::now();
+    let duration = end.duration_since(start).unwrap();
+    println!("it took {} seconds", duration.as_secs_f64());
+    result
+}
 #[cfg(test)]
 mod tests {
     use super::download_day;

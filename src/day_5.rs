@@ -187,7 +187,7 @@ mod tests {
 
     use crate::{
         day_5::{calculate_location, calculate_location_ranges, LocationRange},
-        download_day,
+        download_day, timeit,
     };
 
     #[test]
@@ -410,5 +410,10 @@ humidity-to-location map:
             "Part 2: {}",
             res.iter().fold(usize::MAX, |acc, x| acc.min(x.location))
         )
+    }
+
+    #[test]
+    fn time_part_two() {
+        timeit(part_two)
     }
 }
