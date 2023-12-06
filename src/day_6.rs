@@ -1,16 +1,15 @@
-pub fn new_records(time: usize, current_record: usize) -> Vec<usize> {
-    let mut better_times = vec![];
+pub fn new_records(time: usize, current_record: usize) -> usize {
+    let mut count = 0;
     for i in 0..=time {
         let speed = i;
         let distance = (time - i) * speed;
         if distance > current_record {
-            better_times.push(i);
-        } else if better_times.len() > 0 {
+            count += 1;
+        } else if count > 0 {
             break;
         }
     }
-    println!("{}", better_times.len());
-    better_times
+    count
 }
 
 pub fn new_records_math(time: usize, current_record: usize) -> usize {
@@ -28,7 +27,10 @@ pub fn new_records_math(time: usize, current_record: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::{day_6::new_records_math, download_day, timeit};
+    use crate::{
+        day_6::{new_records, new_records_math},
+        download_day, timeit,
+    };
 
     #[test]
     fn part_one() {
@@ -57,7 +59,7 @@ mod tests {
             .iter()
             .copied()
             .zip(distances)
-            .map(|(time, distance)| new_records_math(time, distance))
+            .map(|(time, distance)| new_records(time, distance))
             .fold(1, |acc, x| acc * x);
         println!("Part 1: {res}")
     }
@@ -124,7 +126,7 @@ Distance:  9  40  200";
         let res = times
             .iter()
             .zip(distances)
-            .map(|(time, distance)| new_records_math(*time, distance))
+            .map(|(time, distance)| new_records(*time, distance))
             .fold(1, |acc, x| acc * x);
         assert_eq!(res, 288)
     }
