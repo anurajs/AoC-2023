@@ -9,6 +9,7 @@ pub fn new_records(time: usize, current_record: usize) -> Vec<usize> {
             break;
         }
     }
+    println!("{}", better_times.len());
     better_times
 }
 
@@ -22,14 +23,12 @@ pub fn new_records_math(time: usize, current_record: usize) -> usize {
     }
     let root_one = (-b as f64 + discriminant) / 2f64 * a as f64;
     let root_two = (-b as f64 - discriminant) / 2f64 * a as f64;
-    (root_two - root_one) as usize
+    (root_two.ceil() - (root_one + 1f64).floor()) as usize
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{day_6::new_records_math, download_day};
-
-    use super::new_records;
+    use crate::{day_6::new_records_math, download_day, timeit};
 
     #[test]
     fn part_one() {
@@ -56,8 +55,9 @@ mod tests {
             .collect();
         let res = times
             .iter()
+            .copied()
             .zip(distances)
-            .map(|(time, distance)| new_records(*time, distance).len())
+            .map(|(time, distance)| new_records_math(time, distance))
             .fold(1, |acc, x| acc * x);
         println!("Part 1: {res}")
     }
@@ -124,7 +124,7 @@ Distance:  9  40  200";
         let res = times
             .iter()
             .zip(distances)
-            .map(|(time, distance)| new_records(*time, distance).len())
+            .map(|(time, distance)| new_records_math(*time, distance))
             .fold(1, |acc, x| acc * x);
         println!("Part 1: {res}")
     }
@@ -168,5 +168,10 @@ Distance:  9  40  200";
     #[test]
     fn test_math() {
         println!("{}", new_records_math(7, 9));
+    }
+
+    #[test]
+    fn time_part_two() {
+        timeit(part_two);
     }
 }
