@@ -126,7 +126,7 @@ Distance:  9  40  200";
             .zip(distances)
             .map(|(time, distance)| new_records_math(*time, distance))
             .fold(1, |acc, x| acc * x);
-        println!("Part 1: {res}")
+        assert_eq!(res, 288)
     }
 
     #[test]
@@ -162,7 +162,7 @@ Distance:  9  40  200";
             .parse()
             .unwrap();
         let res = new_records_math(time, distance);
-        println!("Part 2: {}", res);
+        assert_eq!(res, 71503)
     }
 
     #[test]
