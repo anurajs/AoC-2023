@@ -28,30 +28,8 @@ pub struct Hand {
     pub strength: HandStrength,
 }
 
-impl PartialOrd for Hand {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.strength.cmp(&other.strength) {
-            std::cmp::Ordering::Less => Some(std::cmp::Ordering::Less),
-            std::cmp::Ordering::Greater => Some(std::cmp::Ordering::Greater),
-            std::cmp::Ordering::Equal => {
-                let mut counter = 0;
-                while self.hand[counter] == other.hand[counter] {
-                    counter += 1;
-                }
-                Some(self.hand[counter].cmp(&other.hand[counter]))
-            }
-        }
-    }
-}
-
-impl PartialEq for Hand {
-    fn eq(&self, other: &Self) -> bool {
-        self.hand == other.hand
-    }
-}
-
-impl Hand {
-    fn make_hand(cards: &str) -> [Card; 5] {
+pub trait ParseHand {
+    fn make_hand(&self, cards: &str) -> [Card; 5] {
         let mut hand: Vec<Card> = Vec::with_capacity(5);
         for card in cards.chars() {
             match card {
@@ -71,29 +49,7 @@ impl Hand {
             panic!("Expected a Vec of length {} but it was {}", 5, v.len())
         })
     }
-
-    fn make_hand_part_two(cards: &str) -> [Card; 5] {
-        let mut hand: Vec<Card> = Vec::with_capacity(5);
-        for card in cards.chars() {
-            match card {
-                'A' => hand.push(Card::Ace),
-                'K' => hand.push(Card::King),
-                'Q' => hand.push(Card::Queen),
-                'J' => hand.push(Card::Joker),
-                'T' => hand.push(Card::Ten),
-                x if x.is_numeric() => hand.push(Card::Number(x.to_digit(10).unwrap() as usize)),
-                x => {
-                    panic!("Expect a card found {x}");
-                }
-            }
-        }
-
-        hand.try_into().unwrap_or_else(|v: Vec<Card>| {
-            panic!("Expected a Vec of length {} but it was {}", 5, v.len())
-        })
-    }
-
-    fn calculate_hand_strength(hand: [Card; 5]) -> HandStrength {
+    fn calculate_hand_strength(&self, hand: [Card; 5]) -> HandStrength {
         let mut card_counts = HashMap::new();
         for card in hand {
             *card_counts.entry(card).or_insert(0) += 1;
@@ -124,20 +80,29 @@ impl Hand {
         }
         strength
     }
+}
 
-    fn calculate_hand_strength_part_two(cards: [Card; 5]) -> HandStrength {
-        let mut strengths: Vec<HandStrength> = Vec::new();
-        let mut possible: Vec<_> =
-            [Card::Ace, Card::King, Card::Queen, Card::Jack, Card::Ten].to_vec();
-        possible.extend((2..10).map(Card::Number));
-        for card in possible {
-            let temp = Self::replace_all(cards, Card::Joker, card);
-            strengths.push(Self::calculate_hand_strength(temp));
+impl PartialOrd for Hand {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.strength.cmp(&other.strength) {
+            std::cmp::Ordering::Less => Some(std::cmp::Ordering::Less),
+            std::cmp::Ordering::Greater => Some(std::cmp::Ordering::Greater),
+            std::cmp::Ordering::Equal => {
+                let mut counter = 0;
+                while self.hand[counter] == other.hand[counter] {
+                    counter += 1;
+                }
+                Some(self.hand[counter].cmp(&other.hand[counter]))
+            }
         }
-
-        return *strengths.iter().max().unwrap();
     }
-
+}
+#[derive(Clone, Copy)]
+struct DefaultHandParser {}
+impl ParseHand for DefaultHandParser {}
+#[derive(Clone, Copy)]
+struct JokerHandParser {}
+impl JokerHandParser {
     fn replace_all(mut cards: [Card; 5], a: Card, b: Card) -> [Card; 5] {
         for i in 0..5 {
             if cards[i] == a {
@@ -146,19 +111,54 @@ impl Hand {
         }
         cards
     }
+}
+impl ParseHand for JokerHandParser {
+    fn make_hand(&self, cards: &str) -> [Card; 5] {
+        let mut hand: Vec<Card> = Vec::with_capacity(5);
+        for card in cards.chars() {
+            match card {
+                'A' => hand.push(Card::Ace),
+                'K' => hand.push(Card::King),
+                'Q' => hand.push(Card::Queen),
+                'J' => hand.push(Card::Joker),
+                'T' => hand.push(Card::Ten),
+                x if x.is_numeric() => hand.push(Card::Number(x.to_digit(10).unwrap() as usize)),
+                x => {
+                    panic!("Expect a card found {x}");
+                }
+            }
+        }
 
-    pub fn new(line: &str, part: usize) -> Self {
+        hand.try_into().unwrap_or_else(|v: Vec<Card>| {
+            panic!("Expected a Vec of length {} but it was {}", 5, v.len())
+        })
+    }
+    fn calculate_hand_strength(&self, hand: [Card; 5]) -> HandStrength {
+        let default_parser = DefaultHandParser {};
+        let mut strengths: Vec<HandStrength> = Vec::new();
+        let mut possible: Vec<_> =
+            [Card::Ace, Card::King, Card::Queen, Card::Jack, Card::Ten].to_vec();
+        possible.extend((2..10).map(Card::Number));
+        for card in possible {
+            let temp = Self::replace_all(hand, Card::Joker, card);
+            strengths.push(default_parser.calculate_hand_strength(temp));
+        }
+
+        return *strengths.iter().max().unwrap();
+    }
+}
+
+impl PartialEq for Hand {
+    fn eq(&self, other: &Self) -> bool {
+        self.hand == other.hand
+    }
+}
+
+impl Hand {
+    pub fn new(line: &str, parser: impl ParseHand) -> Self {
         let cards = line.split_whitespace().nth(0).unwrap();
-        let hand = if part == 1 {
-            Self::make_hand(cards)
-        } else {
-            Self::make_hand_part_two(cards)
-        };
-        let hand_strength = if part == 1 {
-            Self::calculate_hand_strength(hand)
-        } else {
-            Self::calculate_hand_strength_part_two(hand)
-        };
+        let hand = parser.make_hand(cards);
+        let hand_strength = parser.calculate_hand_strength(hand);
         let bid = line.split_whitespace().nth(1).unwrap().parse().unwrap();
         Hand {
             bid,
@@ -171,7 +171,10 @@ impl Hand {
 #[cfg(test)]
 mod tests {
 
-    use crate::{day_7::Hand, download_day};
+    use crate::{
+        day_7::{DefaultHandParser, Hand, JokerHandParser},
+        download_day,
+    };
 
     const SAMPLE: &str = "32T3K 765
 T55J5 684
@@ -181,8 +184,12 @@ QQQJA 483";
 
     #[test]
     fn part_one() {
+        let parser = DefaultHandParser {};
         let content = download_day(2023, 7);
-        let mut hands: Vec<_> = content.lines().map(|line| Hand::new(line, 1)).collect();
+        let mut hands: Vec<_> = content
+            .lines()
+            .map(|line| Hand::new(line, parser))
+            .collect();
         hands.sort();
         let res: usize = hands
             .iter()
@@ -194,8 +201,12 @@ QQQJA 483";
 
     #[test]
     fn part_two() {
+        let parser = JokerHandParser {};
         let content = download_day(2023, 7);
-        let mut hands: Vec<_> = content.lines().map(|line| Hand::new(line, 2)).collect();
+        let mut hands: Vec<_> = content
+            .lines()
+            .map(|line| Hand::new(line, parser))
+            .collect();
         hands.sort();
         let res: usize = hands
             .iter()
@@ -207,8 +218,12 @@ QQQJA 483";
 
     #[test]
     fn part_one_sample() {
+        let parser = DefaultHandParser {};
         let content = SAMPLE;
-        let mut hands: Vec<_> = content.lines().map(|line| Hand::new(line, 1)).collect();
+        let mut hands: Vec<_> = content
+            .lines()
+            .map(|line| Hand::new(line, parser))
+            .collect();
         hands.sort();
         let res: usize = hands
             .iter()
@@ -221,8 +236,12 @@ QQQJA 483";
 
     #[test]
     fn part_two_sample() {
+        let parser = JokerHandParser {};
         let content = SAMPLE;
-        let mut hands: Vec<_> = content.lines().map(|line| Hand::new(line, 2)).collect();
+        let mut hands: Vec<_> = content
+            .lines()
+            .map(|line| Hand::new(line, parser))
+            .collect();
         hands.sort();
         let res: usize = hands
             .iter()
