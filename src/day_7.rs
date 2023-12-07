@@ -127,21 +127,9 @@ impl Hand {
 
     fn calculate_hand_strength_part_two(cards: [Card; 5]) -> HandStrength {
         let mut strengths: Vec<HandStrength> = Vec::new();
-        let possible = [
-            Card::Ace,
-            Card::King,
-            Card::Queen,
-            Card::Jack,
-            Card::Ten,
-            Card::Number(9),
-            Card::Number(8),
-            Card::Number(7),
-            Card::Number(6),
-            Card::Number(5),
-            Card::Number(4),
-            Card::Number(3),
-            Card::Number(2),
-        ];
+        let mut possible: Vec<_> =
+            [Card::Ace, Card::King, Card::Queen, Card::Jack, Card::Ten].to_vec();
+        possible.extend((2..10).map(Card::Number));
         for card in possible {
             let temp = Self::replace_all(cards, Card::Joker, card);
             strengths.push(Self::calculate_hand_strength(temp));
@@ -182,9 +170,8 @@ impl Hand {
 
 #[cfg(test)]
 mod tests {
-    use crate::download_day;
 
-    use super::Hand;
+    use crate::{day_7::Hand, download_day};
 
     static SAMPLE: &str = "32T3K 765
 T55J5 684
