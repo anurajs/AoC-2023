@@ -28,6 +28,21 @@ pub struct Hand {
     pub strength: HandStrength,
 }
 
+impl PartialOrd for Hand {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.strength.cmp(&other.strength) {
+            std::cmp::Ordering::Less => Some(std::cmp::Ordering::Less),
+            std::cmp::Ordering::Greater => Some(std::cmp::Ordering::Greater),
+            std::cmp::Ordering::Equal => {
+                let mut counter = 0;
+                while self.hand[counter] == other.hand[counter] {
+                    counter += 1;
+                }
+                Some(self.hand[counter].cmp(&other.hand[counter]))
+            }
+        }
+    }
+}
 pub trait ParseHand {
     fn make_hand(&self, cards: &str) -> [Card; 5] {
         let mut hand: Vec<Card> = Vec::with_capacity(5);
@@ -82,21 +97,6 @@ pub trait ParseHand {
     }
 }
 
-impl PartialOrd for Hand {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.strength.cmp(&other.strength) {
-            std::cmp::Ordering::Less => Some(std::cmp::Ordering::Less),
-            std::cmp::Ordering::Greater => Some(std::cmp::Ordering::Greater),
-            std::cmp::Ordering::Equal => {
-                let mut counter = 0;
-                while self.hand[counter] == other.hand[counter] {
-                    counter += 1;
-                }
-                Some(self.hand[counter].cmp(&other.hand[counter]))
-            }
-        }
-    }
-}
 #[derive(Clone, Copy)]
 struct DefaultHandParser {}
 impl ParseHand for DefaultHandParser {}
