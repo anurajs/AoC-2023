@@ -1,3 +1,5 @@
+use fancy_regex::Regex;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Mapping<'a> {
     pub start: &'a str,
@@ -5,10 +7,11 @@ pub struct Mapping<'a> {
     pub right: &'a str,
 }
 
-pub fn parse_map(line: &str) -> Mapping {
-    let start = &line[0..3];
-    let left = &line[7..10];
-    let right = &line[12..15];
+pub fn parse_map<'a>(line: &'a str, re: &'a Regex) -> Mapping<'a> {
+    let groups = re.captures(line).unwrap().unwrap();
+    let start = groups.name("start").unwrap().as_str();
+    let left = groups.name("left").unwrap().as_str();
+    let right = groups.name("right").unwrap().as_str();
     Mapping { start, left, right }
 }
 
@@ -19,16 +22,18 @@ mod tests {
     use crate::download_day;
 
     use super::parse_map;
+    use fancy_regex::Regex;
     use num::integer::lcm;
     #[test]
     fn part_one() {
+        let regex = Regex::new(r"(?P<start>.{3}) = \((?P<left>.{3}), (?P<right>.{3})\)").unwrap();
         let content = download_day(2023, 8);
         let mut line_iter = content.lines();
         let directions = line_iter.next().unwrap();
         line_iter.next();
         let mut maps = HashMap::new();
         for line in line_iter {
-            let mapping = parse_map(line);
+            let mapping = parse_map(line, &regex);
             maps.insert(mapping.start, mapping);
         }
         let mut current = "AAA";
@@ -47,6 +52,7 @@ mod tests {
 
     #[test]
     fn part_two() {
+        let regex = Regex::new(r"(?P<start>.{3}) = \((?P<left>.{3}), (?P<right>.{3})\)").unwrap();
         let content = download_day(2023, 8);
         let mut line_iter = content.lines();
         let directions = line_iter.next().unwrap();
@@ -54,7 +60,7 @@ mod tests {
         let mut maps = HashMap::new();
         let mut starting: Vec<&str> = vec![];
         for line in line_iter {
-            let mapping = parse_map(line);
+            let mapping = parse_map(line, &regex);
             maps.insert(mapping.start, mapping);
             if mapping.start.ends_with("A") {
                 starting.push(mapping.start);
@@ -94,13 +100,14 @@ ZZZ = (ZZZ, ZZZ)";
 
     #[test]
     fn part_one_sample() {
+        let regex = Regex::new(r"(?P<start>.{3}) = \((?P<left>.{3}), (?P<right>.{3})\)").unwrap();
         let content = SAMPLE;
         let mut line_iter = content.lines();
         let directions = line_iter.next().unwrap();
         line_iter.next();
         let mut maps = HashMap::new();
         for line in line_iter {
-            let mapping = parse_map(line);
+            let mapping = parse_map(line, &regex);
             maps.insert(mapping.start, mapping);
         }
         let mut current = "AAA";
@@ -129,6 +136,7 @@ XXX = (XXX, XXX)";
 
     #[test]
     fn part_two_sample() {
+        let regex = Regex::new(r"(?P<start>.{3}) = \((?P<left>.{3}), (?P<right>.{3})\)").unwrap();
         let content = SAMPLE_2;
         let mut line_iter = content.lines();
         let directions = line_iter.next().unwrap();
@@ -136,7 +144,7 @@ XXX = (XXX, XXX)";
         let mut maps = HashMap::new();
         let mut starting: Vec<&str> = vec![];
         for line in line_iter {
-            let mapping = parse_map(line);
+            let mapping = parse_map(line, &regex);
             maps.insert(mapping.start, mapping);
             if mapping.start.ends_with("A") {
                 starting.push(mapping.start);
