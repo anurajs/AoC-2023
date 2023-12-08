@@ -1,8 +1,8 @@
 #[derive(Debug, Clone, Copy)]
 pub struct Mapping<'a> {
-    start: &'a str,
-    left: &'a str,
-    right: &'a str,
+    pub start: &'a str,
+    pub left: &'a str,
+    pub right: &'a str,
 }
 
 pub fn parse_map(line: &str) -> Mapping {
