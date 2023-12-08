@@ -34,7 +34,6 @@ dependencies = [
  "fancy-regex",
  "num",
  "once_cell",
- "regex",
  "reqwest",
 ]
 
