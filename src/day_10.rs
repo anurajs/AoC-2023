@@ -1,4 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    cmp::Reverse,
+    collections::{BinaryHeap, HashMap, HashSet},
+};
 
 type Point = (usize, usize);
 
@@ -79,55 +82,47 @@ pub fn djikstras_furthest(starting: Point, map: Vec<Vec<char>>) -> (usize, HashS
     let mut visited: HashSet<Point> = HashSet::new();
     distance_tracker.entry(starting).or_insert(0);
 
-    let mut current = Some(starting);
-
-    while let Some(cur) = current {
+    let mut to_visit = BinaryHeap::new();
+    to_visit.push((Reverse(0), starting));
+    let mut x = 0;
+    while let Some((d, cur)) = to_visit.pop() {
+        if visited.contains(&cur) {
+            continue;
+        }
+        let d = d.0;
         visited.insert(cur);
-        let d = *distance_tracker.get(&cur).unwrap();
         if let Some(p) = check_north(cur, &map) {
             distance_tracker
                 .entry(p)
                 .and_modify(|x| *x = *x.min(&mut (d + 1)))
                 .or_insert(d + 1);
+            to_visit.push((Reverse(d + 1), p));
         }
         if let Some(p) = check_east(cur, &map) {
             distance_tracker
                 .entry(p)
                 .and_modify(|x| *x = *x.min(&mut (d + 1)))
                 .or_insert(d + 1);
+            to_visit.push((Reverse(d + 1), p));
         }
         if let Some(p) = check_west(cur, &map) {
             distance_tracker
                 .entry(p)
                 .and_modify(|x| *x = *x.min(&mut (d + 1)))
                 .or_insert(d + 1);
+            to_visit.push((Reverse(d + 1), p));
         }
         if let Some(p) = check_south(cur, &map) {
             distance_tracker
                 .entry(p)
                 .and_modify(|x| *x = *x.min(&mut (d + 1)))
                 .or_insert(d + 1);
+            to_visit.push((Reverse(d + 1), p));
         }
-
-        if let Some(x) = distance_tracker
-            .iter()
-            .filter(|x| !visited.contains(x.0))
-            .min_by(|a, b| a.1.cmp(b.1))
-        {
-            current = Some(*x.0)
-        } else {
-            current = None
-        }
+        x = d;
     }
 
-    (
-        *distance_tracker
-            .iter()
-            .max_by(|a, b| a.1.cmp(b.1))
-            .unwrap()
-            .1,
-        visited,
-    )
+    (x, visited)
 }
 
 pub fn inside_count_line(line: &Vec<char>, line_num: usize, points: &HashSet<Point>) -> usize {
