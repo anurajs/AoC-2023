@@ -24,7 +24,7 @@ pub fn part_x(map: &Vec<Vec<char>>, expansion_factor: isize) -> usize {
                 .take((points[i].0 - points[j].0).abs() as usize)
                 .filter(|x| **x)
                 .count() as isize
-                * 1.max(expansion_factor - 1);
+                * expansion_factor;
 
             distance += empty_columns
                 .iter()
@@ -32,7 +32,7 @@ pub fn part_x(map: &Vec<Vec<char>>, expansion_factor: isize) -> usize {
                 .take((points[i].1 - points[j].1).abs() as usize)
                 .filter(|x| **x)
                 .count() as isize
-                * 1.max(expansion_factor - 1);
+                * expansion_factor;
             distances.push(distance);
         }
     }
@@ -71,22 +71,22 @@ mod tests {
     fn part_one_test() {
         let content = download_day(2023, 11);
         let map = parse_map(&content[..]);
-        let res = part_x(&map, 1);
+        let res = part_x(&map, 2 - 1);
         println!("Part One: {res}");
     }
     #[test]
     fn part_two_test() {
         let content = download_day(2023, 11);
         let map = parse_map(&content[..]);
-        let res = part_x(&map, 1000000);
-        println!("Part One: {res}");
+        let res = part_x(&map, 1000000 - 1);
+        println!("Part two: {res}");
     }
 
     #[test]
     fn part_one_sample() {
         let content = SAMPLE;
         let map = parse_map(content);
-        let res = part_x(&map, 1);
+        let res = part_x(&map, 2 - 1);
         assert_eq!(res, 374);
     }
 
@@ -94,7 +94,7 @@ mod tests {
     fn part_two_sample() {
         let content = SAMPLE;
         let map = parse_map(content);
-        let res = part_x(&map, 100);
+        let res = part_x(&map, 100 - 1);
         assert_eq!(res, 8410);
     }
 }
