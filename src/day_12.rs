@@ -258,7 +258,6 @@ mod tests {
         let sequence = [1, 1, 3];
         let mut cache = HashMap::new();
         let res = get_arrangements(line, &sequence, 0, 0, 0, &mut cache);
-        println!("{cache:?}");
         assert_eq!(res, 1);
     }
 
