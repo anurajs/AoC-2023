@@ -168,8 +168,7 @@ mod tests {
             .map(|s| (s.split_whitespace()))
             .map(|mut split| {
                 let mut line: String = split.next().unwrap().to_string();
-                line.push_str("?");
-                line = line.repeat(5);
+                line = (0..5).map(|_| &line[..]).collect::<Vec<&str>>().join("?");
                 let sequence: Vec<usize> = split
                     .next()
                     .unwrap()
@@ -177,7 +176,7 @@ mod tests {
                     .map(|n| n.parse().unwrap())
                     .collect();
                 let sequence = sequence.repeat(5);
-                (line[0..line.len() - 1].to_string(), sequence)
+                (line, sequence)
             })
             .map(|(line, sequence)| {
                 let mut cache = HashMap::new();
