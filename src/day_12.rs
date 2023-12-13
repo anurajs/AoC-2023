@@ -44,100 +44,13 @@ pub fn get_arrangements(
     return arrangements;
 }
 
-pub fn valid_so_far(line: &str, sequence: &[usize]) -> bool {
-    let mut sequence_iter = sequence.iter().copied();
-    let mut in_contig = false;
-    let mut counter = 0;
-    let mut counter_max = sequence_iter.next();
-    for c in line.chars() {
-        if c == '#' && counter_max.is_some() {
-            in_contig = true;
-            counter += 1;
-            if counter > counter_max.unwrap() {
-                return false;
-            }
-        } else if c == '#' && counter_max.is_none() {
-            return false;
-        } else if c == '.' && in_contig {
-            in_contig = false;
-            if counter != counter_max.unwrap() {
-                return false;
-            }
-            counter = 0;
-            counter_max = sequence_iter.next();
-        } else if c == '?' {
-            return true;
-        }
-    }
-    if in_contig && counter_max.is_some() {
-        let ok = counter == counter_max.unwrap();
-        if sequence_iter.next().is_some() {
-            return false;
-        }
-        return ok;
-    }
-
-    if counter_max.is_some() {
-        return false;
-    }
-    true
-}
-
-pub fn validate_arrangement(line: String, sequence: &[usize]) -> bool {
-    let mut sequence_iter = sequence.iter().copied();
-    let mut in_contig = false;
-    let mut counter = 0;
-    let mut counter_max = sequence_iter.next();
-    for c in line.chars() {
-        if c == '#' && counter_max.is_some() {
-            in_contig = true;
-            counter += 1;
-            if counter > counter_max.unwrap() {
-                return false;
-            }
-        } else if c == '#' && counter_max.is_none() {
-            return false;
-        } else if c == '.' && in_contig {
-            in_contig = false;
-            if counter != counter_max.unwrap() {
-                return false;
-            }
-            counter = 0;
-            counter_max = sequence_iter.next();
-        }
-    }
-    if in_contig && counter_max.is_some() {
-        let ok = counter == counter_max.unwrap();
-        if sequence_iter.next().is_some() {
-            return false;
-        }
-        return ok;
-    }
-
-    if counter_max.is_some() {
-        return false;
-    }
-
-    true
-}
-
-pub fn count_char(line: &str, ch: char) -> usize {
-    let mut total = 0;
-    for c in line.chars() {
-        if c == ch {
-            total += 1;
-        }
-    }
-    total
-}
-
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
     use crate::download_day;
 
-    use super::{get_arrangements, validate_arrangement};
+    use super::get_arrangements;
 
     #[test]
     fn part_one() {
@@ -238,17 +151,6 @@ mod tests {
             .map(|(line, sequence)| get_arrangements(line, &sequence, 0, 0, 0, &mut HashMap::new()))
             .sum();
         assert_eq!(res, 525152)
-    }
-
-    #[test]
-    fn validation_test() {
-        let sequence = [3, 2, 1];
-        let line = ".###.##.#...".to_string();
-        let res = validate_arrangement(line, &sequence);
-        assert_eq!(res, true);
-        let line = ".###.#.##...".to_string();
-        let res = validate_arrangement(line, &sequence);
-        assert_eq!(res, false);
     }
 
     #[test]
