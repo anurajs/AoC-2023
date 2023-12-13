@@ -1,15 +1,12 @@
 pub fn find_reflection(map: &[Vec<char>], differences: usize) -> usize {
     for i in 1..map.len() {
         let mut diff = 0;
-        for (a, b) in (i..map.len()).zip((0..i).rev()) {
-            if diff > differences {
-                break;
-            }
+        'outer: for (a, b) in (i..map.len()).zip((0..i).rev()) {
             for j in 0..map[0].len() {
                 if map[a][j] != map[b][j] {
                     diff += 1;
                     if diff > differences {
-                        break;
+                        break 'outer;
                     }
                 }
             }
@@ -21,15 +18,12 @@ pub fn find_reflection(map: &[Vec<char>], differences: usize) -> usize {
 
     for i in 1..map[0].len() {
         let mut diff = 0;
-        for (a, b) in (i..map[0].len()).zip((0..i).rev()) {
-            if diff > differences {
-                break;
-            }
+        'outer: for (a, b) in (i..map[0].len()).zip((0..i).rev()) {
             for j in 0..map.len() {
                 if map[j][a] != map[j][b] {
                     diff += 1;
                     if diff > differences {
-                        break;
+                        break 'outer;
                     }
                 }
             }
