@@ -62,8 +62,8 @@ mod tests {
         let mut pattern = vec![];
         for line in content.lines() {
             if line.is_empty() {
-                patterns.push(pattern);
-                pattern = vec![];
+                patterns.push(pattern.clone());
+                pattern.clear();
             } else {
                 pattern.push(line.chars().collect::<Vec<char>>());
             }
@@ -82,8 +82,8 @@ mod tests {
         let mut pattern = vec![];
         for line in content.lines() {
             if line.is_empty() {
-                patterns.push(pattern);
-                pattern = vec![];
+                patterns.push(pattern.clone());
+                pattern.clear();
             } else {
                 pattern.push(line.chars().collect::<Vec<char>>());
             }
@@ -102,8 +102,8 @@ mod tests {
         let mut pattern = vec![];
         for line in content.lines() {
             if line.is_empty() {
-                patterns.push(pattern);
-                pattern = vec![];
+                patterns.push(pattern.clone());
+                pattern.clear();
             } else {
                 pattern.push(line.chars().collect::<Vec<char>>());
             }
@@ -126,8 +126,8 @@ mod tests {
         let mut pattern = vec![];
         for line in content.lines() {
             if line.is_empty() {
-                patterns.push(pattern);
-                pattern = vec![];
+                patterns.push(pattern.clone());
+                pattern.clear();
             } else {
                 pattern.push(line.chars().collect::<Vec<char>>());
             }
