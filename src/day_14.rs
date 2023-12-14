@@ -152,7 +152,6 @@ pub fn parse_map(content: &str) -> Vec<Vec<MapUnit>> {
 
 #[cfg(test)]
 mod tests {
-    use std::iter::Cycle;
 
     use crate::{
         day_14::{calculate_load, MapUnit},
