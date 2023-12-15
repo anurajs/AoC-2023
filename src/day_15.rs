@@ -18,7 +18,7 @@ pub fn holiday_ascii_string_helper_manual_arrangement_procedure<'a>(
         let lens = Lens { label, value };
         map.entry(box_loc)
             .and_modify(|vec| {
-                if let Some(idx) = vec.iter().position(|x| x.label == lens.label) {
+                if let Some(idx) = vec.iter().position(|&x| x.label == lens.label) {
                     vec[idx].value = lens.value;
                     return;
                 }
@@ -31,7 +31,7 @@ pub fn holiday_ascii_string_helper_manual_arrangement_procedure<'a>(
         let box_loc = holiday_ascii_string_helper(&label);
         map.entry(box_loc)
             .and_modify(|vec| {
-                if let Some(idx) = vec.iter().position(|x| x.label == label) {
+                if let Some(idx) = vec.iter().position(|&x| x.label == label) {
                     vec.remove(idx);
                 }
             })
