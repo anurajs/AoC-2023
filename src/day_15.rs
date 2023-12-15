@@ -14,7 +14,7 @@ pub fn holiday_ascii_string_helper_manual_arrangement_procedure(
         let mut splitter = content.split("=");
         let label = splitter.nth(0).unwrap().to_string();
         let value = splitter.nth(0).unwrap().parse::<usize>().unwrap();
-        let box_loc = holiday_ascii_string_helper_algorithm(&label);
+        let box_loc = holiday_ascii_string_helper(&label);
         let lens = Lens { label, value };
         map.entry(box_loc)
             .and_modify(|vec| {
@@ -28,7 +28,7 @@ pub fn holiday_ascii_string_helper_manual_arrangement_procedure(
             .or_insert(vec![lens.clone()]);
     } else {
         let label = content.split("-").nth(0).unwrap().to_string();
-        let box_loc = holiday_ascii_string_helper_algorithm(&label);
+        let box_loc = holiday_ascii_string_helper(&label);
         map.entry(box_loc)
             .and_modify(|vec| {
                 if let Some(idx) = vec.iter().position(|x| x.label == label) {
@@ -39,7 +39,7 @@ pub fn holiday_ascii_string_helper_manual_arrangement_procedure(
     }
 }
 
-pub fn holiday_ascii_string_helper_algorithm(content: &str) -> usize {
+pub fn holiday_ascii_string_helper(content: &str) -> usize {
     let mut total: usize = 0;
     for c in content.chars() {
         total += (c as u8) as usize;
@@ -54,7 +54,7 @@ pub fn holiday_ascii_string_helper_algorithm(content: &str) -> usize {
 mod tests {
     use std::collections::HashMap;
 
-    use crate::{day_15::holiday_ascii_string_helper_algorithm, download_day};
+    use crate::{day_15::holiday_ascii_string_helper, download_day};
 
     use super::holiday_ascii_string_helper_manual_arrangement_procedure;
 
@@ -62,7 +62,7 @@ mod tests {
     fn part_one() {
         let res = download_day(2023, 15)
             .split(",")
-            .map(|x| holiday_ascii_string_helper_algorithm(x.trim()))
+            .map(|x| holiday_ascii_string_helper(x.trim()))
             .sum::<usize>();
 
         println!("Part One: {res}")
@@ -92,7 +92,7 @@ mod tests {
             1320,
             SAMPLE_2
                 .split(",")
-                .map(holiday_ascii_string_helper_algorithm)
+                .map(holiday_ascii_string_helper)
                 .sum::<usize>()
         )
     }
@@ -114,6 +114,6 @@ mod tests {
 
     #[test]
     fn hash_sample() {
-        assert_eq!(holiday_ascii_string_helper_algorithm(SAMPLE), 52);
+        assert_eq!(holiday_ascii_string_helper(SAMPLE), 52);
     }
 }
