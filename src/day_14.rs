@@ -173,16 +173,14 @@ mod tests {
         let content = download_day(2023, 14);
         let mut map = parse_map(&content[..]);
         let s;
-        let mut map_vec: Vec<Vec<Vec<MapUnit>>> = vec![];
+        let mut map_vec: Vec<Vec<Vec<MapUnit>>> = vec![map.clone()];
         loop {
             (_, map) = do_cycle(&map);
-            if let Some(idx) = map_vec.iter().position(|x| x == &map) {
-                let cycle_start = idx;
+            if let Some(cycle_start) = map_vec.iter().position(|x| x == &map) {
                 let cycle_length = map_vec.len() - cycle_start;
-                let offset = 1000000000 - cycle_start - 1;
+                let offset = 1000000000 - cycle_start;
                 let pos = offset % cycle_length;
-                let map_vec = &map_vec[cycle_start..];
-                s = calculate_load(&map_vec[pos]);
+                s = calculate_load(&map_vec[cycle_start..][pos]);
                 break;
             } else {
                 map_vec.push(map.clone());
