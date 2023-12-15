@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone, Copy, Hash)]
 pub struct Lens<'a> {
     label: &'a str,
     value: usize,
