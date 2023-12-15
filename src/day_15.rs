@@ -1,18 +1,18 @@
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Hash)]
-pub struct Lens {
-    label: String,
+pub struct Lens<'a> {
+    label: &'a str,
     value: usize,
 }
 
-pub fn holiday_ascii_string_helper_manual_arrangement_procedure(
-    content: &str,
-    map: &mut HashMap<usize, Vec<Lens>>,
+pub fn holiday_ascii_string_helper_manual_arrangement_procedure<'a>(
+    content: &'a str,
+    map: &mut HashMap<usize, Vec<Lens<'a>>>,
 ) {
     if content.contains("=") {
         let mut splitter = content.split("=");
-        let label = splitter.nth(0).unwrap().to_string();
+        let label = splitter.nth(0).unwrap();
         let value = splitter.nth(0).unwrap().parse::<usize>().unwrap();
         let box_loc = holiday_ascii_string_helper(&label);
         let lens = Lens { label, value };
