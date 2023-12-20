@@ -36,7 +36,6 @@ pub struct Visitable {
     distance: usize,
     location: Point,
     direction: Option<Direction>,
-    previous: (Point, Option<Direction>),
 }
 
 pub fn djikstras(map: &[Vec<usize>], min: usize, max: usize) -> usize {
@@ -46,7 +45,6 @@ pub fn djikstras(map: &[Vec<usize>], min: usize, max: usize) -> usize {
         location: (0, 0),
         direction: None,
         distance: 0,
-        previous: ((0, 0), Some(Direction::South)),
     }));
     while let Some(Reverse(current)) = to_visit.pop() {
         if visited.contains(&(current.location, current.direction)) {
@@ -89,7 +87,6 @@ pub fn djikstras(map: &[Vec<usize>], min: usize, max: usize) -> usize {
                         distance: current.distance + total,
                         location: new_loc,
                         direction: Some(dir.unwrap()),
-                        previous: (current.location, current.direction),
                     }));
                 }
             }
