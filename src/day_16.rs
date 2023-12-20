@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 type Point = (isize, isize);
 #[derive(Clone, Copy, Debug)]
-enum MapUnit {
+pub enum MapUnit {
     VerticalSplitter,
     HorizontalSplitter,
     RightMirror,
@@ -10,14 +10,14 @@ enum MapUnit {
     Empty,
 }
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
-enum Direction {
+pub enum Direction {
     North,
     East,
     South,
     West,
 }
 impl Direction {
-    fn movement(&self) -> Point {
+    pub fn movement(&self) -> Point {
         match self {
             Self::North => (0, -1),
             Self::East => (1, 0),
@@ -27,12 +27,12 @@ impl Direction {
     }
 }
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
-struct Beam {
+pub struct Beam {
     location: Point,
     direction: Direction,
 }
 
-fn parse_map(content: &str) -> Vec<Vec<MapUnit>> {
+pub fn parse_map(content: &str) -> Vec<Vec<MapUnit>> {
     let mut res = vec![];
     let mut row = vec![];
     for line in content.lines() {
@@ -52,7 +52,7 @@ fn parse_map(content: &str) -> Vec<Vec<MapUnit>> {
     res
 }
 
-fn simulate_beams(map: &[Vec<MapUnit>], mut beams: Vec<Beam>) -> usize {
+pub fn simulate_beams(map: &[Vec<MapUnit>], mut beams: Vec<Beam>) -> usize {
     let mut new_beams: Vec<Beam> = vec![];
     let mut visited: HashSet<Point> = HashSet::new();
     let mut unique_beam = HashSet::new();
