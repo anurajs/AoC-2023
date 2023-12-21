@@ -5,11 +5,11 @@ use std::{
 
 pub type Point = (isize, isize);
 
-const ALL_DIRECTIONS: [Option<Direction>; 4] = [
-    Some(Direction::North),
-    Some(Direction::East),
-    Some(Direction::South),
-    Some(Direction::West),
+const ALL_DIRECTIONS: [Direction; 4] = [
+    Direction::North,
+    Direction::East,
+    Direction::South,
+    Direction::West,
 ];
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -18,6 +18,7 @@ pub enum Direction {
     West,
     North,
     East,
+    Start,
 }
 
 impl Direction {
@@ -27,6 +28,7 @@ impl Direction {
             Self::West => (-1, 0),
             Self::North => (0, -1),
             Self::East => (1, 0),
+            Self::Start => (0, 0),
         }
     }
 }
@@ -35,15 +37,15 @@ impl Direction {
 pub struct Visitable {
     distance: usize,
     location: Point,
-    direction: Option<Direction>,
+    direction: Direction,
 }
 
 pub fn djikstras(map: &[Vec<usize>], min: usize, max: usize) -> usize {
-    let mut visited: HashSet<(Point, Option<Direction>)> = HashSet::new();
+    let mut visited: HashSet<(Point, Direction)> = HashSet::new();
     let mut to_visit: BinaryHeap<Reverse<Visitable>> = BinaryHeap::new();
     to_visit.push(Reverse(Visitable {
         location: (0, 0),
-        direction: None,
+        direction: Direction::Start,
         distance: 0,
     }));
     while let Some(Reverse(current)) = to_visit.pop() {
@@ -59,10 +61,10 @@ pub fn djikstras(map: &[Vec<usize>], min: usize, max: usize) -> usize {
                 continue;
             }
             let mut total = 0;
-            for i in 1..min {
+            for i in 1..=max {
                 let new_loc = (
-                    current.location.0 + dir.unwrap().movement().0 * i as isize,
-                    current.location.1 + dir.unwrap().movement().1 * i as isize,
+                    current.location.0 + dir.movement().0 * i as isize,
+                    current.location.1 + dir.movement().1 * i as isize,
                 );
                 if !(new_loc.0 < 0
                     || new_loc.0 >= map[0].len() as isize
@@ -70,24 +72,13 @@ pub fn djikstras(map: &[Vec<usize>], min: usize, max: usize) -> usize {
                     || new_loc.1 >= map.len() as isize)
                 {
                     total += map[new_loc.1 as usize][new_loc.0 as usize];
-                }
-            }
-            for i in min..=max {
-                let new_loc = (
-                    current.location.0 + dir.unwrap().movement().0 * i as isize,
-                    current.location.1 + dir.unwrap().movement().1 * i as isize,
-                );
-                if !(new_loc.0 < 0
-                    || new_loc.0 >= map[0].len() as isize
-                    || new_loc.1 < 0
-                    || new_loc.1 >= map.len() as isize)
-                {
-                    total += map[new_loc.1 as usize][new_loc.0 as usize];
-                    to_visit.push(Reverse(Visitable {
-                        distance: current.distance + total,
-                        location: new_loc,
-                        direction: Some(dir.unwrap()),
-                    }));
+                    if i >= min {
+                        to_visit.push(Reverse(Visitable {
+                            distance: current.distance + total,
+                            location: new_loc,
+                            direction: *dir,
+                        }));
+                    }
                 }
             }
         }

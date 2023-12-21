@@ -56,8 +56,7 @@ pub fn simulate_beams(map: &[Vec<MapUnit>], mut beams: Vec<Beam>) -> usize {
     let mut new_beams: Vec<Beam> = vec![];
     let mut visited: HashSet<Point> = HashSet::new();
     let mut unique_beam = HashSet::new();
-    loop {
-        let len = unique_beam.len();
+    while !beams.is_empty() {
         for beam in beams.iter_mut() {
             unique_beam.insert(beam.clone());
             visited.insert(beam.location);
@@ -119,9 +118,6 @@ pub fn simulate_beams(map: &[Vec<MapUnit>], mut beams: Vec<Beam>) -> usize {
         }
         std::mem::swap(&mut beams, &mut new_beams);
         new_beams.clear();
-        if len == unique_beam.len() {
-            break;
-        }
     }
     visited.len() - 1
 }
